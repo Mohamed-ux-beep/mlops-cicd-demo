@@ -1,0 +1,51 @@
+# =========== Continous Integration ==========
+name: CI with uv 
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository 
+        uses: actions/checkout@v4
+
+      - name: Install uv 
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin">> $GITHUB_PATH
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with: 
+          python-version: '3.10'
+
+
+      - name: Sync dependencies 
+        run: uv sync 
+
+
+      - name: Run tests
+        run: uv run pytest -q
+
+# ============= Continous Deployment =================
+deploy:
+  needs: test 
+  runs-on: ubuntu-latest
+
+
+  steps:
+    - name: Checkout repository 
+      uses: actions/checkout@v4
+
+    - name: Simulate Deployment
+      run: |
+        echo "Deployed successfully at $(date)" > deploy_log.txt
+        cat deploy_log.txt
+
