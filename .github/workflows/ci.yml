@@ -35,17 +35,17 @@ jobs:
         run: uv run pytest -q
 
 # ============= Continous Deployment =================
-deploy:
-  needs: test 
-  runs-on: ubuntu-latest
+  deploy:
+    needs: test 
+    runs-on: ubuntu-latest
 
 
-  steps:
-    - name: Checkout repository 
-      uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository 
+        uses: actions/checkout@v4
 
-    - name: Simulate Deployment
-      run: |
-        echo "Deployed successfully at $(date)" > deploy_log.txt
-        cat deploy_log.txt
+      - name: Simulate Deployment
+        run: |
+          echo "Deployed successfully at $(date)" > deploy_log.txt
+          cat deploy_log.txt
 
