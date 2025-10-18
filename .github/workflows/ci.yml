@@ -1,6 +1,8 @@
 # =========== Continous Integration ==========
+# ---- name of our workflow : it must be different from others workflow ----
 name: CI with uv 
 
+# ---- This work flow should run in case of push or pull requests; when someone tries to change master ----
 on:
   push:
     branches: [ master ]
@@ -8,42 +10,50 @@ on:
     branches: [ master ]
 
 
+# ---- There is set of jobs here test and deploy ----
 jobs:
+  # ---- this is to test before pushing or pulling ----
   test:
+    # ---- The test will run on ubuntu machine with python ----
     runs-on: ubuntu-latest
-
+    
+    # ---- Check the source code to the machine ----
     steps:
       - name: Checkout repository 
         uses: actions/checkout@v4
-
+      
+        # ---- we have to install uv ----
       - name: Install uv 
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
           echo "$HOME/.local/bin">> $GITHUB_PATH
-
+      
+        # ---- the same python version ----
       - name: Set up Python
         uses: actions/setup-python@v5
         with: 
           python-version: '3.10'
 
-
+        # ---- The py libraries will be installed using uv sync ----
       - name: Sync dependencies 
         run: uv sync 
 
-
+        # ---- tests will be run here ----
       - name: Run tests
         run: uv run pytest -q
 
 # ============= Continous Deployment =================
+# ---- in case test has succeed ---- 
   deploy:
     needs: test 
     runs-on: ubuntu-latest
 
-
+    # ---- copy the source code to the machine ----
     steps:
       - name: Checkout repository 
         uses: actions/checkout@v4
-
+      
+      # ---- Deploy your service ---- 
       - name: Simulate Deployment
         run: |
           echo "Deployed successfully at $(date)" > deploy_log.txt
